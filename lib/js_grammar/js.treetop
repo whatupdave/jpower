@@ -1,0 +1,148 @@
+# https://developer.mozilla.org/en/Core_JavaScript_1.5_Reference
+
+grammar JS
+  rule program
+    (spacing statement spacing)*
+  end
+
+  rule statement
+    block / function / if_else / for_in / for / ternary / let / [^;\{\}]+ ';' {
+        def statements
+            [ @interval ] << super
+        end
+    }
+  end
+  
+  rule function
+    'function' spacing name:[^ \(]* spacing '(' function_params ')' spacing block
+  end
+
+  rule block
+    '{' spacing (spacing statement spacing)* spacing '}'
+  end
+
+  rule if_else
+    if_part:('if' spacing '(' [^\)]+ ')') spacing (block / statement) (spacing 'else' spacing (block / statement))?  {
+        def statements
+          [ if_part.interval ] << super
+        end
+    }
+  end
+
+  rule let
+    lhs:(lhs)? spacing rhs:expression spacing ';' {
+        def statements
+            interval = rhs.statements.length > 0 ? lhs.interval : @interval
+            [ interval ] << super
+        end
+    }
+  end
+  
+  rule ternary
+    first:(lhs spacing condition:expression) spacing '?' spacing second:expression spacing ':' spacing third:expression spacing ';' {
+      def statements
+        [ first.interval, second.interval, third.interval ]
+      end
+    }
+  end
+  
+  rule expression
+    function / hash / bool / string / number / function_call / [^,\)\}]+
+  end
+
+  rule function_call
+    anonymous_function_call / named_function_call
+  end
+  
+  rule anonymous_function_call
+    '(' spacing function spacing ')' spacing '(' (spacing expression spacing ','?)* ')'
+  end
+  
+  rule named_function_call
+    [^\(]+ spacing '(' (spacing expression spacing ','?)* ')'
+  end
+  
+  rule for
+    'for' spacing '(' spacing initial_expression:([^;\{\}]+ ';') spacing condition:([^;\{\}]+ ';') spacing final_expression:([^;\{\}\)]+) ')' spacing (block / statement) {
+      def statements
+        [ initial_expression.interval, condition.interval, final_expression.interval ] << super
+      end
+    }
+  end
+  
+  rule for_in
+    initial_statement:('for' spacing '(' spacing declaration spacing 'in' spacing expression spacing ')') spacing spacing (block / statement) {
+      def statements
+        [ initial_statement.interval ] << super
+      end
+    }
+  end
+  
+  rule lhs
+    declaration spacing '=' 
+  end
+  
+  rule declaration
+    'var'? spacing [^ ]+
+  end
+    
+  rule hash
+    '{' (spacing hash_entry spacing ','? spacing)* '}'
+  end
+
+  rule hash_entry
+    label:[^ \:]+ spacing ':' spacing expression  
+  end
+
+  rule function_params
+    [^\(\)]*
+  end
+  
+  rule string
+    double_quoted_string / single_quoted_string
+  end
+  
+  rule number
+    [1-9]+ [0-9]* / '0'
+  end
+  
+  rule bool
+    'true' / 'false'
+  end
+  
+  rule double_quoted_string
+    '"' (!'"' . / '\"')* '"'
+  end
+
+  rule single_quoted_string
+    "'" (!"'" . / "\'")* "'"
+  end
+
+  rule spacing
+    (space / single_line_comment / multi_line_comment)*
+  end
+
+  rule forced_spacing
+    (space / single_line_comment / multi_line_comment)+
+  end
+
+  rule single_line_comment
+    "//" line_to_eol
+  end
+
+  rule multi_line_comment
+    "/*" ('*' !'/' / !'*' .)* "*/"
+  end
+
+  rule line_to_eol
+    (!eol .)*
+  end
+
+  rule space
+    [ \t\f] / eol
+  end
+  
+  rule eol
+    ("\r" "\n"?) / "\n"
+  end
+end

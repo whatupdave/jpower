@@ -1,0 +1,62 @@
+.coverage-hit { background-color: #e0edfd; border: solid 1px #ccd9e9; }
+.coverage-not-hit { background-color: #db6b6b; border: solid 1px #661c14; }
+
+#coverage {
+    width: 700px;
+    margin-left: 100px;
+}
+#coverage, #coverage .coverage-file, #coverage .coverage-file-header, #coverage .line-numbers, #coverage .code {
+    font-family: Monaco,'Courier',monospace;
+    line-height: 1.6em;
+}
+.coverage-file {
+    border: solid 1px #dedede;
+}
+
+.coverage-file-header {
+    padding: 0.5em 1em;
+    background-color: #eaeaea;
+    border-bottom: solid 1px #dedede;
+    color: #666;
+}
+    .coverage-file-header span {
+        margin-right: 3em;
+    }
+
+.line-numbers, .code {
+    margin: 0;
+    padding: 1em;
+}
+
+.line-numbers {
+    float: left;
+    text-align: right;
+    color: #aaa;
+    background-color: #eaeaea;
+    border-right: solid 1px #dedede;
+}
+
+.code {
+    float: left;
+}
+
+.javascript .comment, .ruby .comment {
+		color : green;
+	}
+
+	.javascript .string, .ruby .string {
+		color : teal;
+	}
+
+	.javascript .keywords, .ruby .keywords {
+		color : navy;
+	}
+
+	.javascript .global {
+		color : blue;
+	}
+
+	.javascript .brackets, .ruby .brackets {
+		color : navy;
+	}
+
