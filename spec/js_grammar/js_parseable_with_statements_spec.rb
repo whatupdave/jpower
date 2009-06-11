@@ -9,7 +9,7 @@ describe "JSParser should parse" do
   
   describe 'let' do
     it "should contain 1 statement" do
-      parse('var x = 1;')
+      parse('var x = 1;')   
 
       @result.should have(1).statements
       @result.statements[0].should == (0...10)
@@ -49,7 +49,7 @@ describe "JSParser should parse" do
 
   describe 'calling function with multiple args' do
     it "should contain 1 statement" do
-      parse('fn(b, { a: 1} );').should have(1).statements
+      parse('fn(b,{ a:1} );').should have(1).statements
     end
   end
 
@@ -190,20 +190,13 @@ describe "JSParser should parse" do
 
   describe "multiple functions" do
     before do
-      parse("
-       function a() {
-          b();
-        }
-
-        function b() {
-          return 'hey';
-        }")
+      parse("function a() { b(); } function b() { return 'hey'; }")
     end
 
     it "should contain statements" do
       @result.should have(2).statements
-      @result.statements[0].should == (35...39)
-      @result.statements[1].should == (84...97)
+      @result.statements[0].should == (15...19)
+      @result.statements[1].should == (37...50)
     end
   end
 
@@ -240,13 +233,14 @@ describe "JSParser should parse" do
     end
   end
 
-  describe "anonymous function call" do
-    before do; parse('var a = (function(){ return true; })();'); end;
+  describe "anonymous function declaration" do
+    before do; parse('var a = (function(){ return true; });'); end;
 
     it "should contain 1 statements" do
-      @result.should have(2).statements
       @result.statements[0].should == (0...7)
       @result.statements[1].should == (21...33)
+      @result.should have(2).statements
+      
     end
   end
 
@@ -260,14 +254,24 @@ describe "JSParser should parse" do
     end
   end
 
-  describe "assigning multiple functions" do
+  describe "assigning multiple functions with no spaces between" do
     before do
       parse('a = function() {}; b = function() {};')
     end
 
     it "should contain statements" do
-#      @result.should have(1).statements
+      @result.should have(2).statements
     end
   end
 
+  describe "anonymous function call" do
+    before do; parse('var a = (function(){ return true; })();'); end;
+
+    it "should contain statements" do
+      @result.statements[0].should == (0...7)
+      @result.statements[1].should == (21...33)
+      @result.should have(2).statements
+
+    end
+  end
 end

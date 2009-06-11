@@ -2,7 +2,7 @@
 
 grammar JS
   rule program
-    (spacing statement spacing)*
+     (spacing statement spacing)*
   end
 
   rule statement
@@ -47,19 +47,27 @@ grammar JS
   end
   
   rule expression
-    function / hash / bool / string / number / function_call / [^,\)\}]+
+    '(' spacing expression spacing ')' / function / hash / bool / string / number / function_call / [^,\)\}]+
   end
 
   rule function_call
-    anonymous_function_call / named_function_call
+    named_function_call / anonymous_function_call
   end
   
   rule anonymous_function_call
-    '(' spacing function spacing ')' spacing '(' (spacing expression spacing ','?)* ')'
+    '(' spacing function spacing ')' spacing function_args
   end
   
   rule named_function_call
-    [^\(]+ spacing '(' (spacing expression spacing ','?)* ')'
+    function_name spacing function_args
+  end
+  
+  rule function_name
+    [^\(]+
+  end
+  
+  rule function_args
+    '(' spacing (expression (spacing ',' spacing expression)*)? spacing ')'
   end
   
   rule for
